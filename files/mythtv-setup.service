@@ -1,0 +1,16 @@
+[Unit]
+Description = Starts mythtv-setup using xinit
+After = systemd-user-sessions.service network.target mysqld.service
+Conflicts = getty@tty7.service mythbackend.service
+
+[Service]
+Environment=MYTHCONFDIR=/etc/mythtv
+WorkingDirectory=~
+
+User = mythtv
+Group = mythtv
+Type = simple
+
+TTYPath = /dev/tty7
+StandardInput = tty-fail
+ExecStart = /usr/bin/xinit /usr/bin/mythtv-setup -- :0 -nolisten tcp vt7

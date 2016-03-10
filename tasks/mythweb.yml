@@ -1,0 +1,17 @@
+---
+- name: ensure mythweb is installed
+  package:
+    name: mythweb
+
+- name: ensure nginx vhost for mythweb is configured
+  template:
+    src: mythweb_nginx_vhost.conf.j2
+    dest: /etc/nginx/conf.d/vhost_mythweb.conf
+  notify:
+    - reload nginx
+
+- seboolean:
+    name: httpd_can_connect_mythtv
+    state: yes
+    persistent: yes
+  when: "ansible_selinux.status|default('disabled') == 'enabled'"

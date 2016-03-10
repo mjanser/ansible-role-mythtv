@@ -1,0 +1,42 @@
+---
+- hosts: all
+  pre_tasks:
+    - name: ensure rpmfusion-free repository is installed
+      dnf:
+        name: "http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm"
+    - name: ensuare required packages are installed
+      package:
+        name: "{{ item }}"
+      with_items:
+        - php
+        - php-fpm
+        - php-mysql
+        - php-pdo
+        - nginx
+        - mariadb
+        - mariadb-server
+    - name: ensure services are running
+      service:
+        name: "{{ item }}"
+        enabled: yes
+        state: running
+      with_items:
+        - php-fpm
+        - nginx
+        - mariadb
+    - name: ensure timezone is configured for php
+      copy:
+        dest: /etc/php.d/90-custom.conf
+        content: "date.timezone = UTC"
+    - name: check mysql timezone installation
+      command: mysql -NBe "SELECT COUNT(*) FROM mysql.time_zone"
+      register: mysql_timezones_count
+      changed_when: false
+    - name: ensure timezone data is imported into mysql
+      shell: "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql"
+      when: mysql_timezones_count.stdout|int < 1
+  roles:
+    - ansible-role-mythtv
+  vars:
+    mythtv_mythweb_hostname: example.com
+    mythtv_restore_database: /vagrant/ansible-role-mythtv/tests/mythtv.sql

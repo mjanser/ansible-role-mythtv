@@ -1,0 +1,10 @@
+---
+mythtv_database_password: secret
+mythtv_restore_database: ~
+
+mythtv_mythweb: true
+mythtv_mythweb_hostname: localhost
+mythtv_mythweb_allowed_network: "{{ ansible_default_ipv4.network|default('192.168.1.0') }}/{{ ('192.168.1.0/' ~ ansible_default_ipv4.netmask|default('255.255.255.0'))|ipaddr('prefix') }}"
+
+mythtv_backup: true
+mythtv_backup_directory: /var/lib/backup/mythtv
