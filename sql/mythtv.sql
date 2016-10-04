@@ -1,3 +1,9 @@
+-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Linux (x86_64)
+--
+-- Host: localhost    Database: mythtv
+-- ------------------------------------------------------
+-- Server version	10.1.17-MariaDB
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -10,6 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `bdbookmark`
+--
+
+DROP TABLE IF EXISTS `bdbookmark`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bdbookmark` (
+  `serialid` varchar(40) NOT NULL DEFAULT '',
+  `name` varchar(128) DEFAULT NULL,
+  `bdstate` varchar(4096) NOT NULL DEFAULT '',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`serialid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bdbookmark`
+--
+
+LOCK TABLES `bdbookmark` WRITE;
+/*!40000 ALTER TABLE `bdbookmark` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bdbookmark` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `capturecard`
 --
 
@@ -18,6 +49,7 @@ DROP TABLE IF EXISTS `capturecard`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `capturecard` (
   `cardid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parentid` int(10) unsigned NOT NULL DEFAULT '0',
   `videodevice` varchar(128) DEFAULT NULL,
   `audiodevice` varchar(128) DEFAULT NULL,
   `vbidevice` varchar(128) DEFAULT NULL,
@@ -43,8 +75,21 @@ CREATE TABLE `capturecard` (
   `hue` int(11) NOT NULL DEFAULT '0',
   `diseqcid` int(10) unsigned DEFAULT NULL,
   `dvb_eitscan` tinyint(1) NOT NULL DEFAULT '1',
+  `inputname` varchar(32) NOT NULL DEFAULT 'None',
+  `sourceid` int(10) unsigned NOT NULL DEFAULT '0',
+  `externalcommand` varchar(128) DEFAULT NULL,
+  `changer_device` varchar(128) DEFAULT NULL,
+  `changer_model` varchar(128) DEFAULT NULL,
+  `tunechan` varchar(10) DEFAULT NULL,
+  `startchan` varchar(10) DEFAULT NULL,
+  `displayname` varchar(64) NOT NULL DEFAULT '',
+  `dishnet_eit` tinyint(1) NOT NULL DEFAULT '0',
+  `recpriority` int(11) NOT NULL DEFAULT '0',
+  `quicktune` tinyint(4) NOT NULL DEFAULT '0',
+  `schedorder` int(10) unsigned NOT NULL DEFAULT '1',
+  `livetvorder` int(10) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`cardid`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,7 +98,7 @@ CREATE TABLE `capturecard` (
 
 LOCK TABLES `capturecard` WRITE;
 /*!40000 ALTER TABLE `capturecard` DISABLE KEYS */;
-INSERT INTO `capturecard` VALUES (1,'http://mafreebox.freebox.fr/freeboxtv/playlist.m3u',NULL,NULL,'FREEBOX','Television',NULL,'ansible-role-mythtv',0,0,1,0,0,NULL,0,NULL,0,1000,30000,0,0,0,0,0,NULL,1);
+INSERT INTO `capturecard` VALUES (1,0,'http://example.com/foobar',NULL,NULL,'Foobar','Television',NULL,'ansible-role-mythtv-fedora-24',0,0,1,0,0,NULL,0,NULL,0,1000,30000,0,0,0,0,0,NULL,1,'MPEG2TS',1,NULL,NULL,NULL,NULL,'0','',0,0,0,1,1),(2,1,'http://example.com/foobar',NULL,NULL,'Foobar','Television',NULL,'ansible-role-mythtv-fedora-24',0,0,1,0,0,0,0,NULL,0,1000,30000,0,0,0,0,0,0,0,'MPEG2TS',1,NULL,NULL,NULL,NULL,'0','',0,0,0,1,1);
 /*!40000 ALTER TABLE `capturecard` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,7 +126,7 @@ CREATE TABLE `cardinput` (
   `schedorder` int(10) unsigned NOT NULL DEFAULT '0',
   `livetvorder` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`cardinputid`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +135,6 @@ CREATE TABLE `cardinput` (
 
 LOCK TABLES `cardinput` WRITE;
 /*!40000 ALTER TABLE `cardinput` DISABLE KEYS */;
-INSERT INTO `cardinput` VALUES (1,1,1,'MPEG2TS',NULL,NULL,NULL,NULL,'Please add','',0,0,0,1,1);
 /*!40000 ALTER TABLE `cardinput` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -443,6 +487,9 @@ CREATE TABLE `diseqc_tree` (
   `cmd_repeat` int(11) NOT NULL DEFAULT '1',
   `lnb_pol_inv` tinyint(4) NOT NULL DEFAULT '0',
   `address` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `scr_userband` int(10) unsigned NOT NULL DEFAULT '0',
+  `scr_frequency` int(10) unsigned NOT NULL DEFAULT '1400',
+  `scr_pin` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`diseqcid`),
   KEY `parentid` (`parentid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -739,6 +786,70 @@ LOCK TABLES `filemarkup` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `gallery_directories`
+--
+
+DROP TABLE IF EXISTS `gallery_directories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gallery_directories` (
+  `dir_id` int(11) NOT NULL AUTO_INCREMENT,
+  `filename` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `parent_id` int(11) NOT NULL,
+  `dir_count` int(11) NOT NULL DEFAULT '0',
+  `file_count` int(11) NOT NULL DEFAULT '0',
+  `hidden` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`dir_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gallery_directories`
+--
+
+LOCK TABLES `gallery_directories` WRITE;
+/*!40000 ALTER TABLE `gallery_directories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `gallery_directories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `gallery_files`
+--
+
+DROP TABLE IF EXISTS `gallery_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gallery_files` (
+  `file_id` int(11) NOT NULL AUTO_INCREMENT,
+  `filename` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `dir_id` int(11) NOT NULL DEFAULT '0',
+  `type` int(11) NOT NULL DEFAULT '0',
+  `modtime` int(11) NOT NULL DEFAULT '0',
+  `size` int(11) NOT NULL DEFAULT '0',
+  `extension` varchar(255) NOT NULL,
+  `angle` int(11) NOT NULL DEFAULT '0',
+  `date` int(11) NOT NULL DEFAULT '0',
+  `zoom` int(11) NOT NULL DEFAULT '0',
+  `hidden` tinyint(1) NOT NULL DEFAULT '0',
+  `orientation` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`file_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gallery_files`
+--
+
+LOCK TABLES `gallery_files` WRITE;
+/*!40000 ALTER TABLE `gallery_files` DISABLE KEYS */;
+/*!40000 ALTER TABLE `gallery_files` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `housekeeping`
 --
 
@@ -749,6 +860,7 @@ CREATE TABLE `housekeeping` (
   `tag` varchar(64) NOT NULL,
   `hostname` varchar(64) DEFAULT NULL,
   `lastrun` datetime DEFAULT NULL,
+  `lastsuccess` datetime DEFAULT NULL,
   UNIQUE KEY `task` (`tag`,`hostname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -759,7 +871,6 @@ CREATE TABLE `housekeeping` (
 
 LOCK TABLES `housekeeping` WRITE;
 /*!40000 ALTER TABLE `housekeeping` DISABLE KEYS */;
-INSERT INTO `housekeeping` VALUES ('ThemeUpdateNotifications',NULL,'2016-03-07 18:30:55'),('DBCleanup',NULL,'2016-03-07 18:30:55'),('JobQueueRecover','ansible-role-mythtv','2016-03-07 18:30:55'),('LogClean',NULL,'2016-03-07 18:30:55'),('MythFillDB',NULL,'2016-03-07 18:30:55');
 /*!40000 ALTER TABLE `housekeeping` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -773,7 +884,7 @@ DROP TABLE IF EXISTS `inputgroup`;
 CREATE TABLE `inputgroup` (
   `cardinputid` int(10) unsigned NOT NULL,
   `inputgroupid` int(10) unsigned NOT NULL,
-  `inputgroupname` varchar(32) NOT NULL
+  `inputgroupname` varchar(128) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -783,6 +894,7 @@ CREATE TABLE `inputgroup` (
 
 LOCK TABLES `inputgroup` WRITE;
 /*!40000 ALTER TABLE `inputgroup` DISABLE KEYS */;
+INSERT INTO `inputgroup` VALUES (1,1,'ansible-role-mythtv-fedora-24|http://example.com/foobar|1'),(2,1,'ansible-role-mythtv-fedora-24|http://example.com/foobar|1');
 /*!40000 ALTER TABLE `inputgroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1005,7 +1117,7 @@ CREATE TABLE `keybindings` (
 
 LOCK TABLES `keybindings` WRITE;
 /*!40000 ALTER TABLE `keybindings` DISABLE KEYS */;
-INSERT INTO `keybindings` VALUES ('Global','UP','Up Arrow','Up','ansible-role-mythtv'),('Global','DOWN','Down Arrow','Down','ansible-role-mythtv'),('Global','LEFT','Left Arrow','Left','ansible-role-mythtv'),('Global','RIGHT','Right Arrow','Right','ansible-role-mythtv'),('Global','NEXT','Move to next widget','Tab','ansible-role-mythtv'),('Global','PREVIOUS','Move to preview widget','Backtab','ansible-role-mythtv'),('Global','SELECT','Select','Return,Enter,Space','ansible-role-mythtv'),('Global','BACKSPACE','Backspace','Backspace','ansible-role-mythtv'),('Global','ESCAPE','Escape','Esc','ansible-role-mythtv'),('Global','MENU','Pop-up menu','M','ansible-role-mythtv'),('Global','INFO','More information','I','ansible-role-mythtv'),('Global','DELETE','Delete','D','ansible-role-mythtv'),('Global','EDIT','Edit','E','ansible-role-mythtv'),('Global','SCREENSHOT','Save screenshot','','ansible-role-mythtv'),('Global','HANDLEMEDIA','Play a media resource','','ansible-role-mythtv'),('Global','PAGEUP','Page Up','PgUp','ansible-role-mythtv'),('Global','PAGEDOWN','Page Down','PgDown','ansible-role-mythtv'),('Global','PAGETOP','Page to top of list','','ansible-role-mythtv'),('Global','PAGEMIDDLE','Page to middle of list','','ansible-role-mythtv'),('Global','PAGEBOTTOM','Page to bottom of list','','ansible-role-mythtv'),('Global','PREVVIEW','Previous View','Home','ansible-role-mythtv'),('Global','NEXTVIEW','Next View','End','ansible-role-mythtv'),('Global','HELP','Help','F1','ansible-role-mythtv'),('Global','EJECT','Eject Removable Media','','ansible-role-mythtv'),('Global','CUT','Cut text from textedit','Ctrl+X','ansible-role-mythtv'),('Global','COPY','Copy text from textedit','Ctrl+C','ansible-role-mythtv'),('Global','PASTE','Paste text into textedit','Ctrl+V','ansible-role-mythtv'),('Global','NEWLINE','Insert newline into textedit','Ctrl+Return','ansible-role-mythtv'),('Global','UNDO','Undo','Ctrl+Z','ansible-role-mythtv'),('Global','REDO','Redo','Ctrl+Y','ansible-role-mythtv'),('Global','SEARCH','Show incremental search dialog','Ctrl+S','ansible-role-mythtv'),('Global','0','0','0','ansible-role-mythtv'),('Global','1','1','1','ansible-role-mythtv'),('Global','2','2','2','ansible-role-mythtv'),('Global','3','3','3','ansible-role-mythtv'),('Global','4','4','4','ansible-role-mythtv'),('Global','5','5','5','ansible-role-mythtv'),('Global','6','6','6','ansible-role-mythtv'),('Global','7','7','7','ansible-role-mythtv'),('Global','8','8','8','ansible-role-mythtv'),('Global','9','9','9','ansible-role-mythtv'),('Global','TVPOWERON','Turn the display on','','ansible-role-mythtv'),('Global','TVPOWEROFF','Turn the display off','','ansible-role-mythtv'),('Global','SYSEVENT01','Trigger System Key Event #1','','ansible-role-mythtv'),('Global','SYSEVENT02','Trigger System Key Event #2','','ansible-role-mythtv'),('Global','SYSEVENT03','Trigger System Key Event #3','','ansible-role-mythtv'),('Global','SYSEVENT04','Trigger System Key Event #4','','ansible-role-mythtv'),('Global','SYSEVENT05','Trigger System Key Event #5','','ansible-role-mythtv'),('Global','SYSEVENT06','Trigger System Key Event #6','','ansible-role-mythtv'),('Global','SYSEVENT07','Trigger System Key Event #7','','ansible-role-mythtv'),('Global','SYSEVENT08','Trigger System Key Event #8','','ansible-role-mythtv'),('Global','SYSEVENT09','Trigger System Key Event #9','','ansible-role-mythtv'),('Global','SYSEVENT10','Trigger System Key Event #10','','ansible-role-mythtv'),('Browser','ZOOMIN','Zoom in on browser window','.,>','ansible-role-mythtv'),('Browser','ZOOMOUT','Zoom out on browser window',',,<','ansible-role-mythtv'),('Browser','TOGGLEINPUT','Toggle where keyboard input goes to','F1','ansible-role-mythtv'),('Browser','MOUSEUP','Move mouse pointer up','2','ansible-role-mythtv'),('Browser','MOUSEDOWN','Move mouse pointer down','8','ansible-role-mythtv'),('Browser','MOUSELEFT','Move mouse pointer left','4','ansible-role-mythtv'),('Browser','MOUSERIGHT','Move mouse pointer right','6','ansible-role-mythtv'),('Browser','MOUSELEFTBUTTON','Mouse Left button click','5','ansible-role-mythtv'),('Browser','PAGEDOWN','Scroll down half a page','9','ansible-role-mythtv'),('Browser','PAGEUP','Scroll up half a page','3','ansible-role-mythtv'),('Browser','PAGELEFT','Scroll left half a page','7','ansible-role-mythtv'),('Browser','PAGERIGHT','Scroll right half a page','1','ansible-role-mythtv'),('Browser','NEXTLINK','Move selection to next link','Z','ansible-role-mythtv'),('Browser','PREVIOUSLINK','Move selection to previous link','Q','ansible-role-mythtv'),('Browser','FOLLOWLINK','Follow selected link','Return,Space,Enter','ansible-role-mythtv'),('Browser','HISTORYBACK','Go back to previous page','R,Backspace','ansible-role-mythtv'),('Browser','HISTORYFORWARD','Go forward to previous page','F','ansible-role-mythtv'),('Main Menu','EXITPROMPT','Display System Exit Prompt','Esc','ansible-role-mythtv'),('Main Menu','EXIT','System Exit','','ansible-role-mythtv');
+INSERT INTO `keybindings` VALUES ('Global','UP','Up Arrow','Up','ansible-role-mythtv-fedora-24'),('Global','DOWN','Down Arrow','Down','ansible-role-mythtv-fedora-24'),('Global','LEFT','Left Arrow','Left','ansible-role-mythtv-fedora-24'),('Global','RIGHT','Right Arrow','Right','ansible-role-mythtv-fedora-24'),('Global','NEXT','Move to next widget','Tab','ansible-role-mythtv-fedora-24'),('Global','PREVIOUS','Move to preview widget','Backtab','ansible-role-mythtv-fedora-24'),('Global','SELECT','Select','Return,Enter,Space','ansible-role-mythtv-fedora-24'),('Global','BACKSPACE','Backspace','Backspace','ansible-role-mythtv-fedora-24'),('Global','ESCAPE','Escape','Esc','ansible-role-mythtv-fedora-24'),('Global','MENU','Pop-up menu','M','ansible-role-mythtv-fedora-24'),('Global','INFO','More information','I','ansible-role-mythtv-fedora-24'),('Global','DELETE','Delete','D','ansible-role-mythtv-fedora-24'),('Global','EDIT','Edit','E','ansible-role-mythtv-fedora-24'),('Global','SCREENSHOT','Save screenshot','','ansible-role-mythtv-fedora-24'),('Global','HANDLEMEDIA','Play a media resource','','ansible-role-mythtv-fedora-24'),('Global','PAGEUP','Page Up','PgUp','ansible-role-mythtv-fedora-24'),('Global','PAGEDOWN','Page Down','PgDown','ansible-role-mythtv-fedora-24'),('Global','PAGETOP','Page to top of list','','ansible-role-mythtv-fedora-24'),('Global','PAGEMIDDLE','Page to middle of list','','ansible-role-mythtv-fedora-24'),('Global','PAGEBOTTOM','Page to bottom of list','','ansible-role-mythtv-fedora-24'),('Global','PREVVIEW','Previous View','Home','ansible-role-mythtv-fedora-24'),('Global','NEXTVIEW','Next View','End','ansible-role-mythtv-fedora-24'),('Global','HELP','Help','F1','ansible-role-mythtv-fedora-24'),('Global','EJECT','Eject Removable Media','','ansible-role-mythtv-fedora-24'),('Global','CUT','Cut text from textedit','Ctrl+X','ansible-role-mythtv-fedora-24'),('Global','COPY','Copy text from textedit','Ctrl+C','ansible-role-mythtv-fedora-24'),('Global','PASTE','Paste text into textedit','Ctrl+V','ansible-role-mythtv-fedora-24'),('Global','NEWLINE','Insert newline into textedit','Ctrl+Return','ansible-role-mythtv-fedora-24'),('Global','UNDO','Undo','Ctrl+Z','ansible-role-mythtv-fedora-24'),('Global','REDO','Redo','Ctrl+Y','ansible-role-mythtv-fedora-24'),('Global','SEARCH','Show incremental search dialog','Ctrl+S','ansible-role-mythtv-fedora-24'),('Global','0','0','0','ansible-role-mythtv-fedora-24'),('Global','1','1','1','ansible-role-mythtv-fedora-24'),('Global','2','2','2','ansible-role-mythtv-fedora-24'),('Global','3','3','3','ansible-role-mythtv-fedora-24'),('Global','4','4','4','ansible-role-mythtv-fedora-24'),('Global','5','5','5','ansible-role-mythtv-fedora-24'),('Global','6','6','6','ansible-role-mythtv-fedora-24'),('Global','7','7','7','ansible-role-mythtv-fedora-24'),('Global','8','8','8','ansible-role-mythtv-fedora-24'),('Global','9','9','9','ansible-role-mythtv-fedora-24'),('Global','TVPOWERON','Turn the display on','','ansible-role-mythtv-fedora-24'),('Global','TVPOWEROFF','Turn the display off','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT01','Trigger System Key Event #1','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT02','Trigger System Key Event #2','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT03','Trigger System Key Event #3','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT04','Trigger System Key Event #4','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT05','Trigger System Key Event #5','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT06','Trigger System Key Event #6','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT07','Trigger System Key Event #7','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT08','Trigger System Key Event #8','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT09','Trigger System Key Event #9','','ansible-role-mythtv-fedora-24'),('Global','SYSEVENT10','Trigger System Key Event #10','','ansible-role-mythtv-fedora-24'),('Browser','ZOOMIN','Zoom in on browser window','.,>','ansible-role-mythtv-fedora-24'),('Browser','ZOOMOUT','Zoom out on browser window',',,<','ansible-role-mythtv-fedora-24'),('Browser','TOGGLEINPUT','Toggle where keyboard input goes to','F1','ansible-role-mythtv-fedora-24'),('Browser','MOUSEUP','Move mouse pointer up','2','ansible-role-mythtv-fedora-24'),('Browser','MOUSEDOWN','Move mouse pointer down','8','ansible-role-mythtv-fedora-24'),('Browser','MOUSELEFT','Move mouse pointer left','4','ansible-role-mythtv-fedora-24'),('Browser','MOUSERIGHT','Move mouse pointer right','6','ansible-role-mythtv-fedora-24'),('Browser','MOUSELEFTBUTTON','Mouse Left button click','5','ansible-role-mythtv-fedora-24'),('Browser','PAGEDOWN','Scroll down half a page','9','ansible-role-mythtv-fedora-24'),('Browser','PAGEUP','Scroll up half a page','3','ansible-role-mythtv-fedora-24'),('Browser','PAGELEFT','Scroll left half a page','7','ansible-role-mythtv-fedora-24'),('Browser','PAGERIGHT','Scroll right half a page','1','ansible-role-mythtv-fedora-24'),('Browser','NEXTLINK','Move selection to next link','Z','ansible-role-mythtv-fedora-24'),('Browser','PREVIOUSLINK','Move selection to previous link','Q','ansible-role-mythtv-fedora-24'),('Browser','FOLLOWLINK','Follow selected link','Return,Space,Enter','ansible-role-mythtv-fedora-24'),('Browser','HISTORYBACK','Go back to previous page','R,Backspace','ansible-role-mythtv-fedora-24'),('Browser','HISTORYFORWARD','Go forward to previous page','F','ansible-role-mythtv-fedora-24'),('Main Menu','EXITPROMPT','Display System Exit Prompt','Esc','ansible-role-mythtv-fedora-24'),('Main Menu','EXIT','System Exit','','ansible-role-mythtv-fedora-24'),('Main Menu','STANDBYMODE','Enter Standby Mode','','ansible-role-mythtv-fedora-24');
 /*!40000 ALTER TABLE `keybindings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1359,7 +1471,7 @@ CREATE TABLE `profilegroups` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`hostname`),
   KEY `cardtype` (`cardtype`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1368,7 +1480,7 @@ CREATE TABLE `profilegroups` (
 
 LOCK TABLES `profilegroups` WRITE;
 /*!40000 ALTER TABLE `profilegroups` DISABLE KEYS */;
-INSERT INTO `profilegroups` VALUES (1,'Software Encoders (v4l based)','V4L',1,NULL),(2,'IVTV MPEG-2 Encoders','MPEG',1,NULL),(3,'Hardware MJPEG Encoders (Matrox G200-TV, Miro DC10, etc)','MJPEG',1,NULL),(4,'Hardware HDTV','HDTV',1,NULL),(5,'Hardware DVB Encoders','DVB',1,NULL),(6,'Transcoders','TRANSCODE',1,NULL),(7,'FireWire Input','FIREWIRE',1,NULL),(8,'USB Mpeg-4 Encoder (Plextor ConvertX, etc)','GO7007',1,NULL),(14,'Import Recorder','IMPORT',1,NULL),(10,'Freebox Input','Freebox',1,NULL),(11,'HDHomeRun Recorders','HDHOMERUN',1,NULL),(12,'CRC IP Recorders','CRC_IP',1,NULL),(13,'HD-PVR Recorders','HDPVR',1,NULL),(15,'ASI Recorder (DVEO)','ASI',1,NULL),(16,'OCUR Recorder (CableLabs)','OCUR',1,NULL),(17,'Ceton Recorder','CETON',1,NULL);
+INSERT INTO `profilegroups` VALUES (1,'Software Encoders (v4l based)','V4L',1,NULL),(2,'IVTV MPEG-2 Encoders','MPEG',1,NULL),(3,'Hardware MJPEG Encoders (Matrox G200-TV, Miro DC10, etc)','MJPEG',1,NULL),(4,'Hardware HDTV','HDTV',1,NULL),(5,'Hardware DVB Encoders','DVB',1,NULL),(6,'Transcoders','TRANSCODE',1,NULL),(7,'FireWire Input','FIREWIRE',1,NULL),(8,'USB Mpeg-4 Encoder (Plextor ConvertX, etc)','GO7007',1,NULL),(14,'Import Recorder','IMPORT',1,NULL),(10,'Foobar Input','Foobar',1,NULL),(11,'HDHomeRun Recorders','HDHOMERUN',1,NULL),(12,'CRC IP Recorders','CRC_IP',1,NULL),(13,'HD-PVR Recorders','HDPVR',1,NULL),(15,'ASI Recorder (DVEO)','ASI',1,NULL),(16,'OCUR Recorder (CableLabs)','OCUR',1,NULL),(17,'Ceton Recorder','CETON',1,NULL),(18,'VBox Recorder','VBOX',1,NULL);
 /*!40000 ALTER TABLE `profilegroups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1412,6 +1524,10 @@ CREATE TABLE `program` (
   `audioprop` set('STEREO','MONO','SURROUND','DOLBY','HARDHEAR','VISUALIMPAIR') NOT NULL,
   `subtitletypes` set('HARDHEAR','NORMAL','ONSCREEN','SIGNED') NOT NULL,
   `videoprop` set('HDTV','WIDESCREEN','AVC') NOT NULL,
+  `inetref` varchar(40) DEFAULT '',
+  `season` int(4) NOT NULL DEFAULT '0',
+  `episode` int(4) NOT NULL DEFAULT '0',
+  `totalepisodes` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`chanid`,`starttime`,`manualid`),
   KEY `endtime` (`endtime`),
   KEY `title_pronounce` (`title_pronounce`),
@@ -1512,6 +1628,34 @@ LOCK TABLES `recgrouppassword` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `recgroups`
+--
+
+DROP TABLE IF EXISTS `recgroups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recgroups` (
+  `recgroupid` smallint(4) NOT NULL AUTO_INCREMENT,
+  `recgroup` varchar(64) NOT NULL DEFAULT '',
+  `displayname` varchar(64) NOT NULL DEFAULT '',
+  `password` varchar(40) NOT NULL DEFAULT '',
+  `special` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`recgroupid`),
+  UNIQUE KEY `recgroup` (`recgroup`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `recgroups`
+--
+
+LOCK TABLES `recgroups` WRITE;
+/*!40000 ALTER TABLE `recgroups` DISABLE KEYS */;
+INSERT INTO `recgroups` VALUES (1,'Default','','',1),(2,'LiveTV','','',1),(3,'Deleted','','',1);
+/*!40000 ALTER TABLE `recgroups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `record`
 --
 
@@ -1562,20 +1706,22 @@ CREATE TABLE `record` (
   `transcoder` int(11) NOT NULL DEFAULT '0',
   `playgroup` varchar(32) NOT NULL DEFAULT 'Default',
   `prefinput` int(10) NOT NULL DEFAULT '0',
-  `next_record` datetime NOT NULL,
-  `last_record` datetime NOT NULL,
-  `last_delete` datetime NOT NULL,
+  `next_record` datetime DEFAULT NULL,
+  `last_record` datetime DEFAULT NULL,
+  `last_delete` datetime DEFAULT NULL,
   `storagegroup` varchar(32) NOT NULL DEFAULT 'Default',
   `avg_delay` int(11) NOT NULL DEFAULT '100',
   `filter` int(10) unsigned NOT NULL DEFAULT '0',
+  `recgroupid` smallint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`recordid`),
-  KEY `chanid` (`chanid`,`starttime`),
+  UNIQUE KEY `chanid` (`chanid`,`starttime`,`startdate`,`title`,`type`),
   KEY `title` (`title`),
   KEY `seriesid` (`seriesid`),
   KEY `programid` (`programid`),
   KEY `maxepisodes` (`maxepisodes`),
   KEY `search` (`search`),
-  KEY `type` (`type`)
+  KEY `type` (`type`),
+  KEY `recgroupid` (`recgroupid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1585,7 +1731,7 @@ CREATE TABLE `record` (
 
 LOCK TABLES `record` WRITE;
 /*!40000 ALTER TABLE `record` DISABLE KEYS */;
-INSERT INTO `record` VALUES (1,11,0,'21:57:44','2012-08-11','21:57:44','2012-08-11','Default (Template)','','',0,0,'Default','Default',0,0,0,0,0,0,'Default',6,15,'','','','',0,0,1,0,0,0,0,1,-1,'00:00:00',735091,0,0,0,'Default',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00','Default',100,0);
+INSERT INTO `record` VALUES (1,11,0,'21:57:44','2012-08-11','21:57:44','2012-08-11','Default (Template)','','',0,0,'Default','Default',0,0,0,0,0,0,'Default',6,15,'','','','',0,0,1,0,0,0,0,1,-1,'00:00:00',735091,0,0,0,'Default',0,NULL,NULL,NULL,'Default',100,0,1);
 /*!40000 ALTER TABLE `record` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1638,14 +1784,19 @@ CREATE TABLE `recorded` (
   `watched` tinyint(4) NOT NULL DEFAULT '0',
   `storagegroup` varchar(32) NOT NULL DEFAULT 'Default',
   `bookmarkupdate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`chanid`,`starttime`),
+  `recgroupid` smallint(4) NOT NULL DEFAULT '1',
+  `recordedid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `inputname` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`recordedid`),
+  UNIQUE KEY `chanid` (`chanid`,`starttime`),
   KEY `endtime` (`endtime`),
   KEY `seriesid` (`seriesid`),
   KEY `programid` (`programid`),
   KEY `title` (`title`),
   KEY `recordid` (`recordid`),
   KEY `deletepending` (`deletepending`,`lastmodified`),
-  KEY `recgroup` (`recgroup`,`endtime`)
+  KEY `recgroup` (`recgroup`,`endtime`),
+  KEY `recgroupid` (`recgroupid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1718,8 +1869,6 @@ DROP TABLE IF EXISTS `recordedfile`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `recordedfile` (
-  `chanid` int(10) unsigned NOT NULL DEFAULT '0',
-  `starttime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `basename` varchar(128) NOT NULL DEFAULT '',
   `filesize` bigint(20) NOT NULL DEFAULT '0',
   `width` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -1727,16 +1876,22 @@ CREATE TABLE `recordedfile` (
   `fps` float(6,3) NOT NULL DEFAULT '0.000',
   `aspect` float(8,6) NOT NULL DEFAULT '0.000000',
   `audio_sample_rate` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `audio_bits_per_sample` smallint(5) unsigned NOT NULL DEFAULT '0',
   `audio_channels` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `audio_type` varchar(255) NOT NULL DEFAULT '',
-  `video_type` varchar(255) NOT NULL DEFAULT '',
+  `audio_codec` varchar(255) NOT NULL DEFAULT '',
+  `video_codec` varchar(255) NOT NULL DEFAULT '',
   `comment` varchar(255) NOT NULL DEFAULT '',
   `hostname` varchar(64) NOT NULL,
   `storagegroup` varchar(32) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `recordedid` int(10) unsigned NOT NULL,
+  `container` varchar(255) NOT NULL DEFAULT '',
+  `total_bitrate` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `video_avg_bitrate` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `video_max_bitrate` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `audio_avg_bitrate` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `audio_max_bitrate` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `chanid` (`chanid`,`starttime`,`basename`),
+  UNIQUE KEY `recordedid` (`recordedid`),
   KEY `basename` (`basename`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1816,6 +1971,10 @@ CREATE TABLE `recordedprogram` (
   `audioprop` set('STEREO','MONO','SURROUND','DOLBY','HARDHEAR','VISUALIMPAIR') NOT NULL,
   `subtitletypes` set('HARDHEAR','NORMAL','ONSCREEN','SIGNED') NOT NULL,
   `videoprop` set('HDTV','WIDESCREEN','AVC','720','1080','DAMAGED') NOT NULL,
+  `inetref` varchar(40) DEFAULT '',
+  `season` int(4) NOT NULL DEFAULT '0',
+  `episode` int(4) NOT NULL DEFAULT '0',
+  `totalepisodes` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`chanid`,`starttime`,`manualid`),
   KEY `endtime` (`endtime`),
   KEY `title` (`title`),
@@ -1909,7 +2068,7 @@ CREATE TABLE `recordfilter` (
 
 LOCK TABLES `recordfilter` WRITE;
 /*!40000 ALTER TABLE `recordfilter` DISABLE KEYS */;
-INSERT INTO `recordfilter` VALUES (0,'New episode','program.previouslyshown = 0',0),(1,'Identifiable episode','program.generic = 0',0),(2,'First showing','program.first > 0',0),(3,'Prime time','HOUR(CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\')) >= 19 AND HOUR(CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\')) < 22',0),(4,'Commercial free','channel.commmethod = -2',0),(5,'High definition','program.hdtv > 0',0),(6,'This episode','(RECTABLE.programid <> \'\' AND program.programid = RECTABLE.programid) OR (RECTABLE.programid = \'\' AND program.subtitle = RECTABLE.subtitle AND program.description = RECTABLE.description)',0),(7,'This series','(RECTABLE.seriesid <> \'\' AND program.seriesid = RECTABLE.seriesid)',0),(8,'This time','ABS(TIMESTAMPDIFF(MINUTE, CONVERT_TZ(  ADDTIME(RECTABLE.startdate, RECTABLE.starttime), \'Etc/UTC\', \'SYSTEM\'),   CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\'))) MOD 1440   NOT BETWEEN 11 AND 1429',0),(9,'This day and time','ABS(TIMESTAMPDIFF(MINUTE, CONVERT_TZ(  ADDTIME(RECTABLE.startdate, RECTABLE.starttime), \'Etc/UTC\', \'SYSTEM\'),   CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\'))) MOD 10080   NOT BETWEEN 11 AND 10069',0),(10,'This channel','channel.callsign = RECTABLE.station',0);
+INSERT INTO `recordfilter` VALUES (0,'New episode','program.previouslyshown = 0',0),(1,'Identifiable episode','program.generic = 0',0),(2,'First showing','program.first > 0',0),(3,'Prime time','HOUR(CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\')) >= 19 AND HOUR(CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\')) < 22',0),(4,'Commercial free','channel.commmethod = -2',0),(5,'High definition','program.hdtv > 0',0),(6,'This episode','(RECTABLE.programid <> \'\' AND program.programid = RECTABLE.programid) OR (RECTABLE.programid = \'\' AND program.subtitle = RECTABLE.subtitle AND program.description = RECTABLE.description)',0),(7,'This series','(RECTABLE.seriesid <> \'\' AND program.seriesid = RECTABLE.seriesid)',0),(8,'This time','ABS(TIMESTAMPDIFF(MINUTE, CONVERT_TZ(  ADDTIME(RECTABLE.startdate, RECTABLE.starttime), \'Etc/UTC\', \'SYSTEM\'),   CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\'))) MOD 1440   NOT BETWEEN 11 AND 1429',0),(9,'This day and time','ABS(TIMESTAMPDIFF(MINUTE, CONVERT_TZ(  ADDTIME(RECTABLE.startdate, RECTABLE.starttime), \'Etc/UTC\', \'SYSTEM\'),   CONVERT_TZ(program.starttime, \'Etc/UTC\', \'SYSTEM\'))) MOD 10080   NOT BETWEEN 11 AND 10069',0),(10,'This channel','channel.callsign = RECTABLE.station',0),(11,'No episodes','program.category_type <> \'series\'',0);
 /*!40000 ALTER TABLE `recordfilter` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1928,7 +2087,7 @@ CREATE TABLE `recordingprofiles` (
   `profilegroup` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `profilegroup` (`profilegroup`)
-) ENGINE=MyISAM AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1937,7 +2096,7 @@ CREATE TABLE `recordingprofiles` (
 
 LOCK TABLES `recordingprofiles` WRITE;
 /*!40000 ALTER TABLE `recordingprofiles` DISABLE KEYS */;
-INSERT INTO `recordingprofiles` VALUES (1,'Default',NULL,NULL,1),(2,'Live TV',NULL,NULL,1),(3,'High Quality',NULL,NULL,1),(4,'Low Quality',NULL,NULL,1),(5,'Default',NULL,NULL,2),(6,'Live TV',NULL,NULL,2),(7,'High Quality',NULL,NULL,2),(8,'Low Quality',NULL,NULL,2),(9,'Default',NULL,NULL,3),(10,'Live TV',NULL,NULL,3),(11,'High Quality',NULL,NULL,3),(12,'Low Quality',NULL,NULL,3),(13,'Default',NULL,NULL,4),(14,'Live TV',NULL,NULL,4),(15,'High Quality',NULL,NULL,4),(16,'Low Quality',NULL,NULL,4),(17,'Default',NULL,NULL,5),(18,'Live TV',NULL,NULL,5),(19,'High Quality',NULL,NULL,5),(20,'Low Quality',NULL,NULL,5),(21,'RTjpeg/MPEG4',NULL,NULL,6),(22,'MPEG2',NULL,NULL,6),(23,'Default',NULL,NULL,8),(24,'Live TV',NULL,NULL,8),(25,'High Quality',NULL,NULL,8),(26,'Low Quality',NULL,NULL,8),(27,'High Quality',NULL,NULL,6),(28,'Medium Quality',NULL,NULL,6),(29,'Low Quality',NULL,NULL,6),(30,'Default',NULL,NULL,10),(31,'Live TV',NULL,NULL,10),(32,'High Quality',NULL,NULL,10),(33,'Low Quality',NULL,NULL,10),(34,'Default',NULL,NULL,11),(35,'Live TV',NULL,NULL,11),(36,'High Quality',NULL,NULL,11),(37,'Low Quality',NULL,NULL,11),(38,'Default',NULL,NULL,12),(39,'Live TV',NULL,NULL,12),(40,'High Quality',NULL,NULL,12),(41,'Low Quality',NULL,NULL,12),(42,'Default',NULL,NULL,7),(43,'Live TV',NULL,NULL,7),(44,'High Quality',NULL,NULL,7),(45,'Low Quality',NULL,NULL,7),(46,'Default',NULL,NULL,9),(47,'Live TV',NULL,NULL,9),(48,'High Quality',NULL,NULL,9),(49,'Low Quality',NULL,NULL,9),(50,'Default',NULL,NULL,13),(51,'Live TV',NULL,NULL,13),(52,'High Quality',NULL,NULL,13),(53,'Low Quality',NULL,NULL,13),(54,'Default',NULL,NULL,14),(55,'Live TV',NULL,NULL,14),(56,'High Quality',NULL,NULL,14),(57,'Low Quality',NULL,NULL,14),(58,'Default',NULL,NULL,15),(59,'Live TV',NULL,NULL,15),(60,'High Quality',NULL,NULL,15),(61,'Low Quality',NULL,NULL,15),(62,'Default',NULL,NULL,16),(63,'Live TV',NULL,NULL,16),(64,'High Quality',NULL,NULL,16),(65,'Low Quality',NULL,NULL,16),(66,'Default',NULL,NULL,17),(67,'Live TV',NULL,NULL,17),(68,'High Quality',NULL,NULL,17),(69,'Low Quality',NULL,NULL,17);
+INSERT INTO `recordingprofiles` VALUES (1,'Default',NULL,NULL,1),(2,'Live TV',NULL,NULL,1),(3,'High Quality',NULL,NULL,1),(4,'Low Quality',NULL,NULL,1),(5,'Default',NULL,NULL,2),(6,'Live TV',NULL,NULL,2),(7,'High Quality',NULL,NULL,2),(8,'Low Quality',NULL,NULL,2),(9,'Default',NULL,NULL,3),(10,'Live TV',NULL,NULL,3),(11,'High Quality',NULL,NULL,3),(12,'Low Quality',NULL,NULL,3),(13,'Default',NULL,NULL,4),(14,'Live TV',NULL,NULL,4),(15,'High Quality',NULL,NULL,4),(16,'Low Quality',NULL,NULL,4),(17,'Default',NULL,NULL,5),(18,'Live TV',NULL,NULL,5),(19,'High Quality',NULL,NULL,5),(20,'Low Quality',NULL,NULL,5),(21,'RTjpeg/MPEG4',NULL,NULL,6),(22,'MPEG2',NULL,NULL,6),(23,'Default',NULL,NULL,8),(24,'Live TV',NULL,NULL,8),(25,'High Quality',NULL,NULL,8),(26,'Low Quality',NULL,NULL,8),(27,'High Quality',NULL,NULL,6),(28,'Medium Quality',NULL,NULL,6),(29,'Low Quality',NULL,NULL,6),(30,'Default',NULL,NULL,10),(31,'Live TV',NULL,NULL,10),(32,'High Quality',NULL,NULL,10),(33,'Low Quality',NULL,NULL,10),(34,'Default',NULL,NULL,11),(35,'Live TV',NULL,NULL,11),(36,'High Quality',NULL,NULL,11),(37,'Low Quality',NULL,NULL,11),(38,'Default',NULL,NULL,12),(39,'Live TV',NULL,NULL,12),(40,'High Quality',NULL,NULL,12),(41,'Low Quality',NULL,NULL,12),(42,'Default',NULL,NULL,7),(43,'Live TV',NULL,NULL,7),(44,'High Quality',NULL,NULL,7),(45,'Low Quality',NULL,NULL,7),(46,'Default',NULL,NULL,9),(47,'Live TV',NULL,NULL,9),(48,'High Quality',NULL,NULL,9),(49,'Low Quality',NULL,NULL,9),(50,'Default',NULL,NULL,13),(51,'Live TV',NULL,NULL,13),(52,'High Quality',NULL,NULL,13),(53,'Low Quality',NULL,NULL,13),(54,'Default',NULL,NULL,14),(55,'Live TV',NULL,NULL,14),(56,'High Quality',NULL,NULL,14),(57,'Low Quality',NULL,NULL,14),(58,'Default',NULL,NULL,15),(59,'Live TV',NULL,NULL,15),(60,'High Quality',NULL,NULL,15),(61,'Low Quality',NULL,NULL,15),(62,'Default',NULL,NULL,16),(63,'Live TV',NULL,NULL,16),(64,'High Quality',NULL,NULL,16),(65,'Low Quality',NULL,NULL,16),(66,'Default',NULL,NULL,17),(67,'Live TV',NULL,NULL,17),(68,'High Quality',NULL,NULL,17),(69,'Low Quality',NULL,NULL,17),(70,'Default',NULL,NULL,18),(71,'Live TV',NULL,NULL,18),(72,'High Quality',NULL,NULL,18),(73,'Low Quality',NULL,NULL,18);
 /*!40000 ALTER TABLE `recordingprofiles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2045,7 +2204,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` VALUES ('mythfilldatabaseLastRunStart','2016-03-07T18:30:56Z',NULL),('mythfilldatabaseLastRunEnd','2016-03-07T18:30:56Z',NULL),('mythfilldatabaseLastRunStatus','Successful.',NULL),('DataDirectMessage','',NULL),('HaveRepeats','0',NULL),('DBSchemaVer','1317',NULL),('DefaultTranscoder','0',NULL),('HardwareProfileEnabled','0',NULL),('WebBrowserZoomLevel','1','ansible-role-mythtv'),('Language','en_US',NULL),('Country','SE',NULL),('FreqTable','europe-west',NULL),('ISO639Language0','ger',NULL),('ISO639Language1','ger',NULL),('TVFormat','PAL',NULL),('VbiFormat','PAL Teletext',NULL),('prefDupMethod','8',NULL),('DateFormat','ddd d MMM','ansible-role-mythtv'),('MythArchiveVideoFormat','PAL','ansible-role-mythtv'),('ShortDateFormat','dd.MM.','ansible-role-mythtv'),('TimeFormat','h:mm','ansible-role-mythtv'),('BackendServerIP','127.0.0.1','ansible-role-mythtv'),('BackendServerIP6','::1','ansible-role-mythtv'),('AllowLinkLocal','1','ansible-role-mythtv'),('BackendServerPort','6543','ansible-role-mythtv'),('BackendStatusPort','6544','ansible-role-mythtv'),('MasterServerIP','127.0.0.1',NULL),('MasterServerPort','6543',NULL),('MasterBackendOverride','1',NULL),('DeletesFollowLinks','0',NULL),('TruncateDeletesSlowly','0','ansible-role-mythtv'),('HDRingbufferSize','9400',NULL),('StorageScheduler','BalancedFreeSpace',NULL),('UPnP/WMPSource','0',NULL),('DisableAutomaticBackup','0',NULL),('DisableFirewireReset','0','ansible-role-mythtv'),('EITTransportTimeout','5',NULL),('EITCrawIdleStart','60',NULL),('blockSDWUwithoutClient','1',NULL),('idleWaitForRecordingTime','15',NULL),('StartupSecsBeforeRecording','120',NULL),('WakeupTimeFormat','hh:mm yyyy-MM-dd',NULL),('ServerHaltCommand','sudo /sbin/halt -p',NULL),('WOLbackendConnectRetry','5',NULL),('BackendStopCommand','sudo systemctl stop mythbackend',NULL),('BackendStartCommand','sudo systemctl start mythbackend',NULL),('JobQueueMaxSimultaneousJobs','1','ansible-role-mythtv'),('JobQueueCheckFrequency','60','ansible-role-mythtv'),('JobQueueWindowStart','00:00','ansible-role-mythtv'),('JobQueueWindowEnd','23:59','ansible-role-mythtv'),('JobQueueCPU','0','ansible-role-mythtv'),('JobAllowMetadata','1','ansible-role-mythtv'),('JobAllowCommFlag','1','ansible-role-mythtv'),('JobAllowTranscode','1','ansible-role-mythtv'),('JobAllowUserJob1','0','ansible-role-mythtv'),('JobAllowUserJob2','0','ansible-role-mythtv'),('JobAllowUserJob3','0','ansible-role-mythtv'),('JobAllowUserJob4','0','ansible-role-mythtv'),('JobsRunOnRecordHost','0',NULL),('AutoCommflagWhileRecording','0',NULL),('JobQueueCommFlagCommand','mythcommflag',NULL),('JobQueueTranscodeCommand','mythtranscode',NULL),('AutoTranscodeBeforeAutoCommflag','0',NULL),('SaveTranscoding','0',NULL),('UserJobDesc1','User Job #1',NULL),('UserJobDesc2','User Job #2',NULL),('UserJobDesc3','User Job #3',NULL),('UserJobDesc4','User Job #4',NULL),('MythFillEnabled','1',NULL),('MythFillDatabasePath','mythfilldatabase',NULL),('MythFillMaxHour','23',NULL),('MythFillGrabberSuggestsTime','1',NULL),('MythFillSuggestedRunTime','2016-03-08T18:30:56Z',NULL);
+INSERT INTO `settings` VALUES ('mythfilldatabaseLastRunStart','2016-10-04T17:35:24Z',NULL),('mythfilldatabaseLastRunEnd','2016-10-04T17:35:24Z',NULL),('mythfilldatabaseLastRunStatus','Successful.',NULL),('DataDirectMessage','',NULL),('HaveRepeats','0',NULL),('DBSchemaVer','1344',NULL),('HardwareProfileEnabled','0',NULL),('ImageStorageGroupName','Images',NULL),('ImageSortOrder','0',NULL),('ImageShowHiddenFiles','0',NULL),('ImageSlideShowTime','3500',NULL),('ImageTransitionType','1',NULL),('ImageTransitionTime','1000',NULL),('Country','US',NULL),('FreqTable','europe-west',NULL),('ISO639Language0','eng',NULL),('ISO639Language1','eng',NULL),('Language','en_US',NULL),('TVFormat','PAL',NULL),('VbiFormat','PAL teletext',NULL),('DateFormat','ddd MMM d yyyy','ansible-role-mythtv-fedora-24'),('MythArchiveDateFormat','%a %b %d %Y','ansible-role-mythtv-fedora-24'),('MythArchiveTimeFormat','%I:%M %p','ansible-role-mythtv-fedora-24'),('MythArchiveVideoFormat','NTSC','ansible-role-mythtv-fedora-24'),('ShortDateFormat','M/d','ansible-role-mythtv-fedora-24'),('TimeFormat','h:mm AP','ansible-role-mythtv-fedora-24'),('WebBrowserZoomLevel','1','ansible-role-mythtv-fedora-24'),('BackendServerIP','127.0.0.1','ansible-role-mythtv-fedora-24'),('BackendServerIP6','::1','ansible-role-mythtv-fedora-24'),('AllowLinkLocal','1','ansible-role-mythtv-fedora-24'),('BackendServerPort','6543','ansible-role-mythtv-fedora-24'),('BackendStatusPort','6544','ansible-role-mythtv-fedora-24'),('MasterServerIP','127.0.0.1',NULL),('MasterServerPort','6543',NULL),('MasterBackendOverride','1',NULL),('DeletesFollowLinks','0',NULL),('TruncateDeletesSlowly','0','ansible-role-mythtv-fedora-24'),('HDRingbufferSize','9400',NULL),('StorageScheduler','BalancedFreeSpace',NULL),('UPnP/WMPSource','0',NULL),('DisableAutomaticBackup','0',NULL),('DisableFirewireReset','0','ansible-role-mythtv-fedora-24'),('EITTransportTimeout','5',NULL),('EITCrawIdleStart','60',NULL),('blockSDWUwithoutClient','1',NULL),('idleTimeoutSecs','0',NULL),('idleWaitForRecordingTime','15',NULL),('StartupSecsBeforeRecording','120',NULL),('WakeupTimeFormat','hh:mm yyyy-MM-dd',NULL),('ServerHaltCommand','sudo /sbin/halt -p',NULL),('WOLbackendReconnectWaitTime','0',NULL),('WOLbackendConnectRetry','5',NULL),('BackendStopCommand','killall mythbackend',NULL),('BackendStartCommand','mythbackend',NULL),('JobQueueMaxSimultaneousJobs','1','ansible-role-mythtv-fedora-24'),('JobQueueCheckFrequency','60','ansible-role-mythtv-fedora-24'),('JobQueueWindowStart','00:00','ansible-role-mythtv-fedora-24'),('JobQueueWindowEnd','23:59','ansible-role-mythtv-fedora-24'),('JobQueueCPU','0','ansible-role-mythtv-fedora-24'),('JobAllowMetadata','1','ansible-role-mythtv-fedora-24'),('JobAllowCommFlag','1','ansible-role-mythtv-fedora-24'),('JobAllowTranscode','1','ansible-role-mythtv-fedora-24'),('JobAllowUserJob1','0','ansible-role-mythtv-fedora-24'),('JobAllowUserJob2','0','ansible-role-mythtv-fedora-24'),('JobAllowUserJob3','0','ansible-role-mythtv-fedora-24'),('JobAllowUserJob4','0','ansible-role-mythtv-fedora-24'),('JobsRunOnRecordHost','0',NULL),('AutoCommflagWhileRecording','0',NULL),('JobQueueCommFlagCommand','mythcommflag',NULL),('JobQueueTranscodeCommand','mythtranscode',NULL),('AutoTranscodeBeforeAutoCommflag','0',NULL),('SaveTranscoding','0',NULL),('UserJobDesc1','User Job #1',NULL),('UserJobDesc2','User Job #2',NULL),('UserJobDesc3','User Job #3',NULL),('UserJobDesc4','User Job #4',NULL),('MythFillEnabled','1',NULL),('MythFillDatabasePath','mythfilldatabase',NULL),('MythFillMinHour','0',NULL),('MythFillMaxHour','23',NULL),('MythFillGrabberSuggestsTime','1',NULL),('MythFillSuggestedRunTime','2016-10-05T17:35:24Z',NULL);
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2073,10 +2232,7 @@ CREATE TABLE `storagegroup` (
 
 LOCK TABLES `storagegroup` WRITE;
 /*!40000 ALTER TABLE `storagegroup` DISABLE KEYS */;
-INSERT INTO `storagegroup` VALUES (2,'Default','ansible-role-mythtv','/var/lib/mythtv/recordings/'),(3,'LiveTV','ansible-role-mythtv','/var/lib/mythtv/livetv/');
-INSERT INTO `storagegroup` VALUES (4,'3rdParty','ansible-role-mythtv','/var/lib/mythtv/3rd-party/'),(5,'ChannelIcons','ansible-role-mythtv','/var/lib/mythtv/channels/');
-INSERT INTO `storagegroup` VALUES (6,'Streaming','ansible-role-mythtv','/tmp/mythtv-streaming'),(7,'Temp','ansible-role-mythtv','/tmp/mythtv');
-INSERT INTO `storagegroup` VALUES (8,'Themes','ansible-role-mythtv','/var/lib/mythtv/themes');
+INSERT INTO `storagegroup` VALUES (1,'LiveTV','ansible-role-mythtv-fedora-24','/var/lib/mythtv/livetv/'),(3,'Default','ansible-role-mythtv-fedora-24','/var/lib/mythtv/recordings/'),(4,'DB Backups','ansible-role-mythtv-fedora-24','/var/lib/mythtv/dbbackups/');
 /*!40000 ALTER TABLE `storagegroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2170,6 +2326,84 @@ CREATE TABLE `upnpmedia` (
 LOCK TABLES `upnpmedia` WRITE;
 /*!40000 ALTER TABLE `upnpmedia` DISABLE KEYS */;
 /*!40000 ALTER TABLE `upnpmedia` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_permissions`
+--
+
+DROP TABLE IF EXISTS `user_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_permissions` (
+  `userid` int(5) unsigned NOT NULL,
+  `permission` varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`userid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_permissions`
+--
+
+LOCK TABLES `user_permissions` WRITE;
+/*!40000 ALTER TABLE `user_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_sessions`
+--
+
+DROP TABLE IF EXISTS `user_sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_sessions` (
+  `sessiontoken` varchar(40) NOT NULL DEFAULT '',
+  `userid` int(5) unsigned NOT NULL,
+  `client` varchar(128) NOT NULL,
+  `created` datetime NOT NULL,
+  `lastactive` datetime NOT NULL,
+  `expires` datetime NOT NULL,
+  PRIMARY KEY (`sessiontoken`),
+  UNIQUE KEY `userid_client` (`userid`,`client`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_sessions`
+--
+
+LOCK TABLES `user_sessions` WRITE;
+/*!40000 ALTER TABLE `user_sessions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `userid` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(128) NOT NULL DEFAULT '',
+  `password_digest` varchar(32) NOT NULL DEFAULT '',
+  `lastlogin` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`userid`),
+  KEY `username` (`username`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'admin','bcd911b2ecb15ffbd6d8e6e744d60cf6','0000-00-00 00:00:00');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2513,7 +2747,7 @@ CREATE TABLE `videosource` (
 
 LOCK TABLES `videosource` WRITE;
 /*!40000 ALTER TABLE `videosource` DISABLE KEYS */;
-INSERT INTO `videosource` VALUES (1,'test','/bin/true','','default',NULL,NULL,0,NULL,-1);
+INSERT INTO `videosource` VALUES (1,'default','/bin/true','','default',NULL,NULL,0,NULL,-1);
 /*!40000 ALTER TABLE `videosource` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2553,3 +2787,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+-- Dump completed on 2016-10-04 17:36:58

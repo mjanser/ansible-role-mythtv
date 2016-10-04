@@ -4,7 +4,7 @@ An Ansible role that installs MythTV on Fedora.
 
 ## Requirements
 
-The rpmfusion-free repository has to be installed before running this role.
+The UnitedRPMs or rpmfusion-free repository has to be installed before running this role.
 Also MySQL/MariaDB, nginx and php have to be installed beforehand. To achieve this the following roles could be used:
 - mjanser.mysql
 - mjanser.nginx

@@ -8,12 +8,15 @@
     - mythtv-backend
     - mythtv-setup
     - mythtv-docs
+    - python-netaddr
     - python-MythTV
     - dvb-apps
     - xinit
     - xorg-x11-server-Xorg
     - xorg-x11-drv-evdev
     - mesa-dri-drivers
+    - mesa-libGL
+    - mesa-libEGL
     - liberation-sans-fonts
 
 - name: ensure database user exists
@@ -60,66 +63,17 @@
     group: root
     mode: 0644
 
-#- name: ensure user config directory is linked
-#  file:
-#    src: /etc/mythtv
-#    dest: /var/lib/mythtv/.mythtv
-#    state: link
-#    force: yes
-
-#- name: ensure channel icons directory is linked
-#  file:
-#    src: /var/lib/mythtv/channels
-#    dest: /etc/mythtv/channels
-#    state: link
-#    force: yes
-
-#- name: ensure cache/tmp directories exist
-#  file:
-#    dest: "/etc/mythtv/{{ item }}"
-#    state: directory
-#    owner: mythtv
-#    group: mythtv
-#    mode: 0755
-#  with_items:
-#    - tmp
-#    - themecache
-#    - cache
-
-#- name: ensure host-specific cache directories are linked
-#  file:
-#    src: /etc/mythtv/cache
-#    dest: "/etc/mythtv/Cache-{{ item }}-{{ ansible_nodename }}"
-#    state: link
-#    force: yes
-#    owner: mythtv
-#    group: mythtv
-#  with_items:
-#    - mythbackend
-#    - mythtv-setup
-#    - mythmetadatalookup
-
-#- name: ensure cache/tmp directories are mounted as tmpfs
-#  template:
-#    src: tmpfs.mount.j2
-#    dest: "/etc/systemd/system/{{ item.name }}.mount"
-#    owner: root
-#    group: root
-#    mode: 644
-#  with_items: "{{ mythtv_cache_directories }}"
-
-#- name: ensure cache/tmp directory mounts are enabled
-#  service:
-#    name: "{{ item.name }}.mount"
-#    enabled: yes
-#    state: started
-#  with_items: "{{ mythtv_cache_directories }}"
-
 - name: ensure mythlink.pl is executable
   file:
     dest: /usr/share/doc/mythtv-docs/contrib/user_jobs/mythlink.pl
     state: file
     mode: "u+x,g+x,o+x"
+
+- name: ensure mythlink.pl is linked in bin directory
+  file:
+    src: /usr/share/doc/mythtv-docs/contrib/user_jobs/mythlink.pl
+    dest: /usr/local/bin/mythlink.pl
+    state: link
 
 - name: ensure anybody can start xinit
   lineinfile:

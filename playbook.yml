@@ -1,9 +1,9 @@
 ---
 - hosts: all
   pre_tasks:
-    - name: ensure rpmfusion-free repository is installed
+    - name: ensure UnitedRPMs repository is installed
       dnf:
-        name: "http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm"
+        name: "https://raw.githubusercontent.com/UnitedRPMs/unitedrpms/master/RPM/unitedrpms-{{ ansible_distribution_version }}-2.noarch.rpm"
     - name: ensuare required packages are installed
       package:
         name: "{{ item }}"
@@ -36,7 +36,7 @@
       shell: "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql"
       when: mysql_timezones_count.stdout|int < 1
   roles:
-    - ansible-role-mythtv
+    - vagrant
   vars:
     mythtv_mythweb_hostname: example.com
-    mythtv_restore_database: /vagrant/ansible-role-mythtv/tests/mythtv.sql
+    mythtv_restore_database: /vagrant/sql/mythtv.sql

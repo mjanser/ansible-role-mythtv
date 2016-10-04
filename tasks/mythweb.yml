@@ -14,4 +14,4 @@
     name: httpd_can_connect_mythtv
     state: yes
     persistent: yes
-  when: "ansible_selinux.status|default('disabled') == 'enabled'"
+  when: ansible_selinux.status|default('disabled') == 'enabled'
