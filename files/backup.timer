@@ -1,0 +1,9 @@
+[Unit]
+Description=MythTV backup
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=30min
+
+[Install]
+WantedBy=timers.target

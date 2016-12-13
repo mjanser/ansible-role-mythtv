@@ -1,0 +1,8 @@
+[Unit]
+Description=MythTV backup
+
+[Service]
+Type=oneshot
+User=mythtv
+Group=mythtv
+ExecStart=/usr/share/mythtv/mythconverg_backup.pl
