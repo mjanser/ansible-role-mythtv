@@ -3,14 +3,14 @@
   pre_tasks:
     - name: ensure UnitedRPMs repository is installed
       dnf:
-        name: "https://raw.githubusercontent.com/UnitedRPMs/unitedrpms/master/RPM/unitedrpms-{{ ansible_distribution_version }}-2.noarch.rpm"
+        name: "https://raw.githubusercontent.com/UnitedRPMs/unitedrpms/master/RPM/unitedrpms-{{ ansible_distribution_version }}-1.noarch.rpm"
     - name: ensuare required packages are installed
       package:
         name: "{{ item }}"
       with_items:
         - php
         - php-fpm
-        - php-mysql
+        - php-mysqlnd
         - php-pdo
         - nginx
         - mariadb

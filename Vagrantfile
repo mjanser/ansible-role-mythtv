@@ -1,6 +1,6 @@
 Vagrant.configure('2') do |config|
-  config.vm.box = 'obnox/fedora24-64-lxc'
-  config.vm.hostname = 'ansible-role-mythtv-fedora-24'
+  config.vm.box = 'mjanser/fedora25-64-lxc'
+  config.vm.hostname = 'ansible-role-mythtv'
 
   config.ssh.forward_x11 = true
 
