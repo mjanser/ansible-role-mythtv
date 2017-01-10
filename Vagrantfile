@@ -15,6 +15,9 @@ Vagrant.configure('2') do |config|
 sleep 2
 curl -s -H "Host: example.com" http://127.0.0.1 | grep -qi "mythweb" && echo "curl request was successful" || { echo "curl request failed" && exit 1; }
 
+systemctl start mythtv-backup.service || { echo "backup failed" && exit 1; }
+systemctl start mythdb-optimize.service || { echo "optimizing database failed" && exit 1; }
+
 echo "127.0.0.1" > /etc/ansible/hosts
 echo "localhost" > /etc/ansible/inventory
 

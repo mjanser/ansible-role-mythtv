@@ -52,8 +52,12 @@
     - livetv
     - recordings
     - recordings_pretty
-    - 3rd-party
-    - themes
+
+- name: ensure config directory is linked in home directory
+  file:
+    src: /etc/mythtv
+    dest: /var/lib/mythtv/.mythtv
+    state: link
 
 - name: ensure mythtv is configured
   template:
@@ -100,6 +104,7 @@
 - name: ensure db optimize timer is enabled
   service:
     name: mythdb-optimize.timer
+    state: started
     enabled: yes
 
 - include: mythweb.yml

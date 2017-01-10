@@ -4,7 +4,7 @@
     - name: ensure UnitedRPMs repository is installed
       dnf:
         name: "https://raw.githubusercontent.com/UnitedRPMs/unitedrpms/master/RPM/unitedrpms-{{ ansible_distribution_version }}-1.noarch.rpm"
-    - name: ensuare required packages are installed
+    - name: ensure required packages are installed
       package:
         name: "{{ item }}"
       with_items:
