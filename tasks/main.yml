@@ -63,9 +63,6 @@
   template:
     src: config.xml.j2
     dest: /etc/mythtv/config.xml
-    owner: root
-    group: root
-    mode: 0644
 
 - name: ensure mythlink.pl is executable
   file:
@@ -90,9 +87,6 @@
   copy:
     src: mythtv-setup.service
     dest: /etc/systemd/system/mythtv-setup.service
-    owner: root
-    group: root
-    mode: 644
 
 - name: ensure mythbackend is running
   service:
